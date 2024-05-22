@@ -4,6 +4,7 @@
 \usepackage{amsmath}  % Enhanced mathematical formatting
 \usepackage{amsfonts}  % Extended set of fonts for math
 \usepackage{amssymb}  % Extended symbol collection
+\usepackage{bm}
 \usepackage{parskip}
 \usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
 
@@ -16,6 +17,9 @@
 
 \begin{document}
 \maketitle
+\begin{center}
+  Notes taken from the "Reinforcement Learning By the Book" youtube series by Mutual Information
+\end{center}
 
 
 
@@ -35,15 +39,16 @@ MDPs are characterized by:
 The policy $\pi(a|s)$ determines the probability of taking action $a$ in state $s$.
 
 \subsection{Return}
+\label{sec:return}
 The return $G_t$ is defined as the discounted sum over future rewards.
 \begin{equation}
   G_t = \sum_{k=t+1}^{T}\gamma^{k-t-1}R_k
 \end{equation}
 
 Where $\gamma$ is the discount factor and $T$ is the terminal step. Expanded form:
-\begin{equation}
+\begin{equation*}
   G_t = R_{t+1} + \gamma R_{t+2} + \gamma ^2 R_{t+3} + \cdots + \gamma ^{T-t-1} R_T
-\end{equation}
+\end{equation*}
 
 Note: $\mathcal{S}^+$ denotes the state space along with a terminal state.
 
@@ -56,11 +61,11 @@ A trajectory $\tau$ is defined as a sequence of states, actions, and rewards ass
 
 \subsection{Expectation}
 \begin{equation}
-  \mathbb{E}_p[f(\mathbf{x})] = \int p(\mathbf{x}) f(\mathbf{x}) d\mathbf{x} \quad \mbox{or} \quad \sum_{\mathbf{x}} p(\mathbf{x}) f(\mathbf{x})
+  \mathbb{E}_p[f(\bm{x})] = \int p(\bm{x}) f(\bm{x}) d\bm{x} \quad \mbox{or} \quad \sum_{\bm{x}} p(\bm{x}) f(\bm{x})
 \end{equation}
 
-Where $p(\mathbf{x})$ is a probability density of $\mathbf{x}$ and $f(\mathbf{x})$ is some scalar function. This should be thought of 
-as the probability weighted average of $f(\mathbf{x})$ over the domain of $\mathbf{x}$.
+Where $p(\bm{x})$ is a probability density of $\bm{x}$ and $f(\bm{x})$ is some scalar function. This should be thought of 
+as the probability weighted average of $f(\bm{x})$ over the domain of $\bm{x}$.
 
 \subsection{State Value Function}
 \begin{equation}
@@ -143,9 +148,9 @@ This process always converges to the true state values. This process can be appl
 Another important subroutine is policy improvement, where given $v_\pi(s)$, the goal is to find a better policy than $\pi$.
 
 Recall that for any optimal policy $\pi_*$:
-\begin{equation}
+\begin{equation*}
   \pi_*(s) = \argmax_a q_*(s,a)
-\end{equation}
+\end{equation*}
 
 Given this, we can define a new policy $\pi'$ that simply chooses the action with the highest value under the current policy $\pi$:
 \begin{equation}
@@ -153,9 +158,9 @@ Given this, we can define a new policy $\pi'$ that simply chooses the action wit
 \end{equation}
 
 And due to the Policy Improvement Theorem, we can be sure $\pi'$ is always at least as good as $\pi$:
-\begin{equation}
+\begin{equation*}
   v_\pi(s) \leq v_{\pi'}(s) \qquad \forall s \in \mathcal{S}
-\end{equation}
+\end{equation*}
 
 \subsection{Generalized Policy Iteration (GPI)}
 GPI is a class of algorithms that takes advantage of the fact that an arbitrary number of iterations of policy evaluation and improvement 
@@ -163,10 +168,10 @@ always converges on the optimal policy $\pi_*$. Almost all RL methods are well d
 
 The simplest GPI algorithm is policy iteration. This algorithm starts with some arbitrary initial policy $\pi_0$ and simply repeats policy evaluation 
 and policy improvement until the optimal policy and optimal value function are reached:
-\begin{equation}
+\begin{equation*}
   \pi_0 \xrightarrow{E} v_{\pi_0} \xrightarrow{I} \pi_1 \xrightarrow{E} v_{\pi_1} \xrightarrow{I} 
   \pi_2 \xrightarrow{E} \cdots \xrightarrow{I} \pi_* \xrightarrow{E} v_*
-\end{equation}
+\end{equation*}
 
 
 
@@ -174,7 +179,7 @@ and policy improvement until the optimal policy and optimal value function are r
 At the root, Monte Carlo methods are algorithms for approximating expectations by sampling batches of data from the 
 probability distribution and averaging them:
 \begin{equation}
-  \mathbb{E}_p[f(\mathbf{x})] \approx \frac{1}{N} \sum_{i=1}^{N} f(\mathbf{x}_i) \qquad \mathbf{x}_i \sim p(\mathbf{x})
+  \mathbb{E}_p[f(\bm{x})] \approx \frac{1}{N} \sum_{i=1}^{N} f(\bm{x}_i) \qquad \bm{x}_i \sim p(\bm{x})
 \end{equation}
 
 Unlike in the assumption of dynamic programming, in MC, we don't have complete knowledge of the MDP. 
@@ -187,12 +192,13 @@ In model-free methods, the agent learns associations between actions and rewards
 Monte Carlo methods are model-free.
 
 \subsection{Monte Carlo Evaluation}
+\label{sec:mc-evaluation}
 The goal is to estimate $q_\pi$ given sample trajectories under $\pi$. 
 We can express $q_\pi$-estimation as $v_\pi$-estimation by translating to a Markov Reward Process (MRP)
 where the state-action pairs of the original MDP are the states of the new MRP.
-\begin{equation}
+\begin{equation*}
   S_t^{new} = (S_t, A_t)
-\end{equation}
+\end{equation*}
 
 This effectively bakes in the policy of the original MDP.
 Estimating $v(s^{new})$ is isomorphic to estimating $q_\pi(s,a)$. 
@@ -204,13 +210,13 @@ We use averages to approximate $v_\pi(s)$:
 
 We sum over all $M$ trajectories and again over all timesteps in each trajectory.
 $\mathbb{I}$ is an indicator function. This works as a filter that only includes rewards gathered from state $s$.
-$g_t^m$ is the sampled return at time $t$ in the $m$th trajectory. The double sum can then be
+$g_t^m$ is the sampled return (\ref{sec:return}) at time $t$ in the $m$th trajectory. The double sum can then be
 summarized as the sum of all rewards that followed from being in state $s$. We then
 divide by the number of occurences of $s$, $C(s)$, to get the average reward.
 
 \subsubsection{Update Rule}
 In practice, instead of calculating the value function using a batch of trajectories as in (9),
-we apply an update rule after each trajectory:
+we apply an update rule for each timestep $t$ in each trajectory $m$:
 \begin{equation}
   V(s_t^m) \leftarrow V(s_t^m) + \frac{1}{C(s_t^m)} (g_t^m - V(s_t^m))
 \end{equation}
@@ -238,7 +244,7 @@ we apply the same update rule, but instead of updating state values, we update a
 
 We then apply policy improvement, argmaxing over the actions in each state.
 
-\subsubsection{Exploration-Exploitation Trade-off}
+\subsection{Exploration-Exploitation Trade-off}
 The outstanding issue with the above method is that the initial policy may be biased towards actions that it knows about.
 It could be leaving truly optimal actions on the table simply because it has never tried them. The exploration-exploitation
 trade-off states that in order to discover optimal policies, we must \emph{explore} all state-action pairs. However, in order to get
@@ -255,16 +261,16 @@ In other words, in the limit, all state-action pairs are visited an infinite num
 \subsubsection{$\epsilon$-Greedy Policy}
 With probability $\epsilon$, take an action selected uniformly from $\mathcal{A}(s)$, otherwise take $\argmax_a Q(s,a)$.
 
-\subsubsection{Off-Policy Methods}
+\subsection{Off-Policy Methods}
 Off-policy methods are a generalization of on-policy methods, where the same policy serves to generate data by choosing actions and to 
 be updated and returned as an estimate of the optimal policy. In off-policy methods, these roles are separated into two policies, the behavior
 policy $b(a|s)$ which generates the data and the target policy $\pi(a|s)$ which is evaluated and improved.
 
 Our goal is the same. We want to find $q_\pi(s,a)$, but since our data comes from $b$ and not $\pi$, we are actually estimating the expected 
 return under $b$:
-\begin{equation}
+\begin{equation*}
   \mathbb{E}_b[G_t | S_t = s, A_t = a]
-\end{equation}
+\end{equation*}
 
 In order to estimate $q_\pi(s,a)$, we use \emph{importance sampling}, which enables estimating an expectation of one distribution using samples from another:
 \begin{equation}
@@ -290,9 +296,9 @@ If we could update the policy from those transitions during an episode, which wo
 
 \subsection{$n$-step Temporal Difference Learning}
 Recall the update rule from \ref{sec:update-rule}:
-\begin{equation}
+\begin{equation*}
   V(s_t^m) \leftarrow V(s_t^m) + \alpha (g_t^m - V(s_t^m))
-\end{equation}
+\end{equation*}
 
 Here, $g_t^m$ is called the \emph{target}. It is what we move our estimate towards on each step. In $n$-step TD, instead of using this target,
 which is only available at the end of an episode, we add the discounted rewards of the next $n$ steps, and then use our current estimate 
@@ -347,20 +353,20 @@ it is necessary for the agent to generalize its experiences in a miniscule subse
 the state space. The solution is function approximation.
 
 The goal is to approximate $v_\pi(s)$ where data is generated under a fixed policy $\pi$ and the state space is arbitrarily large. It is assumed 
-that the true value function can be approximated by some function of that state and a fixed-length parameter vector $\mathbf{w}$.
+that the true value function can be approximated by some function of that state and a fixed-length parameter vector $\bm{w}$.
 \begin{equation}
-  v_\pi(s) \approx \hat{v}(s, \mathbf{w}) \qquad \mathbf{w} \in \mathbb{R}^d
+  v_\pi(s) \approx \hat{v}(s, \bm{w}) \qquad \bm{w} \in \mathbb{R}^d
 \end{equation}
 
-The additional constraint on this approach is that since $d \ll |S|$, any change to $\mathbf{w}$ results in changes to the estimated value for 
+The additional constraint on this approach is that since $d \ll |S|$, any change to $\bm{w}$ results in changes to the estimated value for 
 many states. In other words, unlike the tabular case, the parameters do not provide enough degrees of freedom to adjust the value of one state
 at a time. It follows from this constraint that it is impossible to arrive at the true value function, even with infinite data.
 
-\subsection{Selecting $\mathbf{w}$}
-The goal is to select a vector $\mathbf{w}$ that minimizes the \emph{value error} (loss), which is the weighted mean-squared error between the approximate value
+\subsection{Finding $\bm{w}$}
+The goal is to select a vector $\bm{w}$ that minimizes some error or loss function $L(\bm{w})$. An example to use is the weighted mean-squared error between the approximate value
 function and the true value function.
 \begin{equation}
-  \overline{VE}(\mathbf{w}) = \sum_{s \in \mathcal{S}} \mu(s) [v_\pi(s) - \hat{v}(s, \mathbf{w})]^2
+  L(\bm{w}) = \sum_{s \in \mathcal{S}} \mu(s) [v_\pi(s) - \hat{v}(s, \bm{w})]^2
 \end{equation}
 
 Here, $\mu(\cdot)$ is a distribution over states, weighing how much we care about each state. It is often defined as the proportion of time spent in each state.
@@ -369,21 +375,155 @@ Clearly, this is impossible to calculate. It requires summing over an arbitraril
 an unknown. Instead of trying to calculate this metric, we approximate it.
 
 \subsection{Stochastic Gradient Descent}
-This is one common algorithm for approximately minimizing $\overline{VE}(\mathbf{w})$ by finding a local minimum. It requires three additional assumptions:
+This is one common algorithm for approximately minimizing $L(\bm{w})$ by finding a local minimum. It requires three additional assumptions:
 \begin{itemize}
   \item States are visited in proportion to $\mu(\cdot)$
-  \item $\hat{v}(s, \mathbf{w})$ is differentiable
-  \item We observe a surrogate $U_t$ for $v_\pi(S_t)$
+  \item $\hat{v}(s, \bm{w})$ is differentiable
+  \item We observe a surrogate $U_t$ for $v_\pi(S_t)$ called the target
 \end{itemize}
 
-Given this, SGD applies an update rule to $\mathbf{w}$ for each visit to a state:
+Given this, SGD applies an update rule to $\bm{w}$ for each visit to a state:
 \begin{equation}
-  \mathbf{w} \leftarrow \mathbf{w} + \alpha [U_t - \hat{v}(S_t, \mathbf{w})] \nabla \hat{v}(S_t, \mathbf{w})
+  \bm{w} \leftarrow \bm{w} + \alpha [U_t - \hat{v}(S_t, \bm{w})] \nabla \hat{v}(S_t, \bm{w})
 \end{equation}
 
-Here, each update nudges $\mathbf{w}$ in the direction that maximally reduces the error from the target.
+Here, each update nudges $\bm{w}$ towards the target. The gradient term encodes how to adjust each component to maximally change the approximate value function.
+This is multiplied by the error term, which encodes how far off and in which direction (positive or negative) $\hat{v}$ is from $U_t$.
+In other words, in each update, we increment $\bm{w}$ such that it maximally reduces the difference between $\hat{v}$ and $U_t$.
+
+\subsection{Selecting $U_t$}
+In traditional supervised learning, the target is provided in the form of labeled training data, and the loss function is predefined. 
+However, in RL, the loss is conceptualized as the difference between the estimated and actual returns, which aren't explicitly provided,
+and need to be inferred from interactions with the environment. This means the target is not static, but changes as the policy improves 
+and as more is learned about the environment.
+
+One important rule is that if the target is \emph{unbiased}, meaning the expectation of the target is centered around the true value, then the weights
+will converge to a local optimum of the loss. 
+
+\subsubsection{Gradient MC}
+In this simple algorithm, the target is simply set to the return.
+\begin{equation}
+  U_t = G_t
+\end{equation}
+
+Other than this different update rule, this algorithm is identical to MC evaluation (\ref{sec:mc-evaluation}).
+
+\subsubsection{Semi-Gradient TD}
+Here, the target uses TD. In this example, it uses a one step ahead value estimate.
+\begin{equation}
+  U_t = R_t + \gamma \hat{v}(S_{t+1}, \bm{w})
+\end{equation}
+
+This approach does not satisfy the convergence rule above since it is biased, especially at the beginning with its uninformed initialization.
+Additionally, the target depends on $\bm{w}$, meaning the update rule is not a true gradient step. That means that the taking the gradient of the loss
+$L(\bm{w})$ would be different than plugging this target into the update rule. In this algorithm, we ignore the lack of guaranteed convergence and
+proceed.
+
+\subsection{On-Policy FA Control}
+Just like in previous sections, the shift in perspective from policy evaluation to policy control involves substituting $\hat{v}(s, \bm{w})$ 
+with $\hat{q}(s, a, \bm{w})$. As such, the update rule becomes:
+\begin{equation}
+  \bm{w} \leftarrow \bm{w} + \alpha [U_t - \hat{q}(S_t, A_t, \bm{w})] \nabla \hat{q}(S_t, A_t, \bm{w})
+\end{equation}
 
 
+
+\section{Policy Gradient Methods}
+Policy Gradient methods are a more direct approach to determining a high-reward policy than the previously mentioned methods. 
+Before, we trained a parameter vector $\bm{w}$ and passed it into $\hat{q}(s, a, \bm{w})$ such that it estimated the expected 
+return, which was then used to create a policy that chose the maximum action value (along with some exploration policy).
+
+With PGMs, the action value function is bypassed altogether. The goal becomes determining a parameter vector $\bm{\theta}$
+that directly determines the policy $\pi(a|s, \bm{\theta})$. Instead of estimating the expected return of action-value pairs, we
+directly estimate the probability of every action in every state.
+
+\subsection{REINFORCE}
+As before, the first algorithm we will examine is a MC variant, meaning we wait until the end of the trajectory so we have access to the actual return for each timestep $g_t^m$. 
+A first pass at determining the update rule for the parameter vector $\bm{\theta}$ might look something like this:
+\begin{equation}
+  \bm{\theta} \leftarrow \bm{\theta} + \alpha g_t^m \nabla \pi(a_t^m|s_t^m, \bm{\theta})
+\end{equation}
+
+Here, for each timestep, we use the gradient with respect to $\bm{\theta}$ to calculate the direction to nudge $\bm{\theta}$ in to maximally increase the action probability at 
+the current state. In other words, the state and action are both constant in this operation, so calculating the gradient tells us how to maximize $\pi$ for this specific state-action pair.
+We multiply this by the return $g_t^m$, which serves both to scale the nudge by the magnitude of the return and to orient the nudge depending on the sign of the return.
+We of course throw in the learning rate $\alpha$ as well. 
+
+This update rule is close, but has a major issue. Actions that have a higher probability of being chosen to begin with are of course 
+chosen more often. Every time an action appears in a trajectory, the update rule is applied over that action. If that action has a positive return, 
+it will just keep increasing in probability, even if another much less chosen action has a much higher return. This leads to a suboptimal policy.
+
+The solution is to scale down by the probability itself:
+\begin{equation}
+  \bm{\theta} \leftarrow \bm{\theta} + \alpha g_t^m \frac{\nabla \pi(a_t^m|s_t^m, \bm{\theta})}{\pi(a_t^m|s_t^m, \bm{\theta})}
+\end{equation}
+
+This scales updates to account for the frequency of their application. 
+
+Applying some calculus rules and a discount factor yields the true update rule of the REINFORCE algorithm:
+\begin{equation}
+  \bm{\theta} \leftarrow \bm{\theta} + \alpha \gamma^t g_t^m \nabla \ln \pi(a_t^m|s_t^m, \bm{\theta})
+\end{equation}
+
+\subsection{REINFORCE with baseline}
+Naive PGMs such as REINFORCE are not used in their base form in practice because of a subtle issue: $g_t^m$ is always positive.
+Recall that the goal of the update rule was to make the current action in the current state more likely. This means all actions in all states 
+are made more likely every time they are visited. In other words, the policy never learns to \emph{not} do things, it just learns to do good things
+\emph{more often}. This causes the learning process to take a long time, because the policy needs enough experiences to learn to take the "really good" actions 
+over the "pretty good" actions.
+
+The solution is to introduce a new function $b(s_t^m)$ called the \emph{baseline} and subtract it from the return
+\begin{equation*}
+  g_t^m \rightarrow g_t^m - b(s_t^m)
+\end{equation*}
+
+The only constraint on the baseline is that it cannot depend on $a_t^m$. 
+A very natural choice for the baseline is an estimate of the state value function.
+\begin{equation*}
+  b(s_t^m) = \hat{v}(s_t^m, \bm{w})
+\end{equation*}
+
+This works well as a baseline since actions where $g_t^m < \hat{v}(s_t^m, \bm{w})$ become less likely in the update rule,
+and actions where $g_t^m > \hat{v}(s_t^m, \bm{w})$ increase in probability. In other words, we make actions more likely when we expect
+them to perform better than the average of being in that state, and less likely otherwise.
+
+Since we are now estimating both the policy and the state value function, the algorithm does become a bit more complicated. The algorithm now requires:
+\begin{itemize}
+  \item Functional forms $\pi(a|s, \bm{\theta})$ and $\hat{v}(s, \bm{w})$
+  \item Initial $\bm{\theta}$ and $\bm{w}$
+  \item Learning rates $a^{\bm{\theta}}$ and $a^{\bm{w}}$
+\end{itemize}
+
+And now in each iteration both parameter vectors must be updated:
+\begin{equation}
+  \delta = g_t^m - \hat{v}(s_t^m, \bm{w})
+\end{equation}
+\begin{equation}
+  \bm{w} \leftarrow \bm{w} + \alpha^{\bm{w}} \delta \nabla \hat{v}(s_t^m, \bm{w})
+\end{equation}
+\begin{equation}
+  \bm{\theta} \leftarrow \bm{\theta} + \alpha^{\bm{\theta}} \gamma^t \delta \nabla \ln \pi(a_t^m|s_t^m, \bm{\theta})
+\end{equation}
+
+\subsection{The Policy Gradient Theorem}
+Consider the goal of PGMs. The quantity that is actually being optimized with respect to $\bm{\theta}$ is the value of the initial state $v_{\pi_{\bm{\theta}}}(s_0)$.
+Note that this is a purely theoretical quantity, and is impossible to evaluate exactly. The Policy Gradient Theorem gives us a way to approximate 
+the direction of the gradient of this initial state value with respect to $\bm{\theta}$:
+\begin{equation}
+  \nabla v_{\pi_{\bm{\theta}}}(s_0) \propto \sum_{s} \mu(s) \sum_a q_{\pi_{\bm{\theta}}}(s,a) \nabla \pi(a|s, \bm{\theta})
+\end{equation}
+
+Here, $\mu(s)$ gives us the probability of being in a given state under the policy $\pi$, and is updated while interacting with the environment. 
+$q_{\pi_{\bm{\theta}}}(s,a)$ is a theoretical value, but can be approximated as shown in previous sections. Lastly, $\nabla \pi(a|s, \bm{\theta})$
+is computable exactly, as shown above.
+
+The inner sum over the actions in each state is an average of the policy gradients, weighted by the action values.
+This inner sum can be thought of as the weighted sum direction to move $\bm{\theta}$ to make high return actions more likely when in state $s$.
+The outer sum is just those average directions averaged over all states, weighted by the probability of being in each state. The whole expression
+can be thought of as a big weighted average of $\bm{\theta}$ directions that make high return actions maximally more likely, which makes sense 
+considering the left side is the $\bm{\theta}$ direction to maximally increase the expected return of the starting state. 
+
+The theorem states that "if an algorithm approximates this direction, it will approximately optimize the objective."
 
 
 \end{document}
