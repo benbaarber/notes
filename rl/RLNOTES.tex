@@ -8,9 +8,6 @@
 \usepackage{parskip}
 \usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
 
-\DeclareMathOperator*{\argmin}{argmin}
-\DeclareMathOperator*{\argmax}{argmax}
-
 \title{RL Notes}
 \author{Ben Barber}
 
@@ -149,12 +146,12 @@ Another important subroutine is policy improvement, where given $v_\pi(s)$, the 
 
 Recall that for any optimal policy $\pi_*$:
 \begin{equation*}
-  \pi_*(s) = \argmax_a q_*(s,a)
+  \pi_*(s) = \arg \max_a q_*(s,a)
 \end{equation*}
 
 Given this, we can define a new policy $\pi'$ that simply chooses the action with the highest value under the current policy $\pi$:
 \begin{equation}
-  \pi'(s) = \argmax_a q_\pi(s,a)
+  \pi'(s) = \arg \max_a q_\pi(s,a)
 \end{equation}
 
 And due to the Policy Improvement Theorem, we can be sure $\pi'$ is always at least as good as $\pi$:
@@ -259,7 +256,7 @@ a positive probability.
 In other words, in the limit, all state-action pairs are visited an infinite number of times, meaning GPI will find the optimal policy.
 
 \subsubsection{$\epsilon$-Greedy Policy}
-With probability $\epsilon$, take an action selected uniformly from $\mathcal{A}(s)$, otherwise take $\argmax_a Q(s,a)$.
+With probability $\epsilon$, take an action selected uniformly from $\mathcal{A}(s)$, otherwise take $\arg \max_a Q(s,a)$.
 
 \subsection{Off-Policy Methods}
 Off-policy methods are a generalization of on-policy methods, where the same policy serves to generate data by choosing actions and to 
